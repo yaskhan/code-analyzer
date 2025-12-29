@@ -1,0 +1,23 @@
+src/animals/dog.py
+class Dog – inherited Animal – Represents a domestic dog with barking capabilities
+public method bark() – Emits a loud barking sound
+public method eat() – Consumes food provided to the dog
+function feed(pet) – Provides food to the specified animal
+
+src/utils/helper.js
+class StringHelper – Utility class for string operations
+public method capitalize() – Capitalizes the first letter of a string
+public method reverse() – Reverses the order of characters
+function formatDate(date) – Formats a date object to string
+
+src/models/user.java
+class User – inherited Person – Represents a user in the system
+public method login() – Authenticates the user credentials
+private method validatePassword() – Checks if password meets requirements
+public method logout() – Ends the user session
+
+src/core/processor.rs
+module processor – Core processing module for data transformation
+class DataProcessor – Handles data processing operations
+public method process() – Processes input data and returns result
+function initialize() – Sets up the processor with default configuration
