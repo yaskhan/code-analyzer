@@ -1,0 +1,35 @@
+# V binary output
+code-analyzer
+*.exe
+*.so
+*.dylib
+*.a
+
+# V generated files
+*.c
+*.tmp.c
+v.mod.cache
+
+# Output files
+output.txt
+*.log
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Test output
+test_output/
+test/
+temp/
+
+# Build artifacts
+build/
+dist/
+
+# OS files
+Thumbs.db

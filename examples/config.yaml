@@ -1,0 +1,19 @@
+# Example configuration for custom language support
+custom_languages:
+  - extension: ".mylang"
+    rules:
+      class_pattern: "class\\s+(\\w+)(?:\\s+extends\\s+(\\w+))?"
+      function_pattern: "fn\\s+(\\w+)\\s*\\("
+      method_pattern: "(public|private)?\\s+method\\s+(\\w+)\\s*\\("
+      module_pattern: "module\\s+(\\w+)"
+      doc_comment_marker: "#"
+      doc_before_element: true
+
+  - extension: ".custom"
+    rules:
+      class_pattern: "type\\s+(\\w+)\\s+struct"
+      function_pattern: "func\\s+(\\w+)\\("
+      method_pattern: "func\\s+\\([^)]+\\)\\s+(\\w+)\\("
+      module_pattern: "package\\s+(\\w+)"
+      doc_comment_marker: "//"
+      doc_before_element: true
