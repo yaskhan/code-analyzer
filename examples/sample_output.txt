@@ -21,3 +21,46 @@ module processor – Core processing module for data transformation
 class DataProcessor – Handles data processing operations
 public method process() – Processes input data and returns result
 function initialize() – Sets up the processor with default configuration
+
+src/math/calculator.kt
+class Calculator – A simple calculator class that performs basic arithmetic operations
+public method add(a Double, b Double) – Adds two numbers together
+public method subtract(a Double, b Double) – Subtracts second number from first
+private method logOperation(operation String) – Logs operation to console
+data class CalculationResult – Data class representing a calculation result with timestamp
+class AdvancedCalculator – inherited Calculator – Advanced calculator with history tracking
+function createCalculator() – Creates a new calculator instance
+
+src/data/processor.scala
+trait Processor – A processor trait that defines the interface for data processing
+class TextProcessor – inherited Processor – A simple text processor that converts text to uppercase
+public method process(input String) – Processes the input text by converting to uppercase
+public method getName() – Returns the processor name
+class DataProcessor – inherited Processor – A data processor that handles numeric data transformations
+protected method reset() – Resets the internal counter
+object ProcessorFactory – Companion object for creating processor instances
+public method createTextProcessor() – Creates a new text processor instance
+function formatOutput(result String) – Formats output with prefix
+
+src/model/user.php
+class User – User class representing a user in the system
+public method __construct(username string, email string) – Constructor to initialize a new user
+public method authenticate(password string) – Authenticate the user with provided credentials
+private method validateEmail(email string) – Validates email address format
+interface UserRepository – Interface for user repositories
+class DatabaseUserRepository – inherited UserRepository – Database implementation of user repository
+public method find(id) – Find user by ID
+protected static method sanitize(data) – Sanitizes data for safe output
+function createUser(username, email) – Creates a new user instance
+
+src/utils/math.zig
+pub const struct Point – Point structure representing a 2D coordinate
+pub method new(x f64, y f64) – Creates a new point with given coordinates
+pub method distanceFromOrigin() – Calculates distance from origin
+pub const struct Rectangle – Rectangle structure
+pub method area() – Calculates rectangle area
+pub method perimeter() – Calculates rectangle perimeter
+pub fn add(a f64, b f64) – Adds two numbers together
+pub fn subtract(a f64, b f64) – Subtracts second number from first
+pub fn divide(a f64, b f64) – Divides first number by second
+fn square(x f64) – Calculates the square of a number

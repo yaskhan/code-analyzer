@@ -4,7 +4,7 @@ A powerful console application written in V (Vlang) that recursively analyzes so
 
 ## Features
 
-- **Multi-language Support**: Built-in support for 16 programming languages
+- **Multi-language Support**: Built-in support for 20 programming languages
 - **Recursive Analysis**: Scans directories and subdirectories automatically
 - **Documentation Extraction**: Captures comments and docstrings before code elements
 - **Extensible**: Add custom language support via configuration files
@@ -13,24 +13,28 @@ A powerful console application written in V (Vlang) that recursively analyzes so
 
 ## Supported Languages
 
-| Language   | Extensions                        |
-|------------|-----------------------------------|
-| Java       | `.java`                           |
-| JavaScript | `.js`, `.jsx`                     |
-| TypeScript | `.ts`, `.tsx`                     |
-| Dart       | `.dart`                           |
-| Rust       | `.rs`                             |
-| C++        | `.cpp`, `.cc`, `.cxx`, `.hpp`, `.h`, `.hxx` |
-| Python     | `.py`                             |
-| C#         | `.cs`                             |
-| V (Vlang)  | `.v`, `.vv`                       |
-| C          | `.c`                              |
-| D          | `.d`                              |
-| Lua        | `.lua`                            |
-| Pascal     | `.pas`, `.pp`, `.inc`             |
-| Swift      | `.swift`                          |
-| Ruby       | `.rb`                             |
-| Go         | `.go`                             |
+| Language      | Extensions                                      |
+|---------------|-------------------------------------------------|
+| Java          | `.java`                                         |
+| JavaScript    | `.js`, `.jsx`                                   |
+| TypeScript    | `.ts`, `.tsx`                                   |
+| Dart          | `.dart`                                         |
+| Rust          | `.rs`                                           |
+| C++           | `.cpp`, `.cc`, `.cxx`, `.hpp`, `.h`, `.hxx`     |
+| Python        | `.py`                                           |
+| C#            | `.cs`                                           |
+| V (Vlang)     | `.v`, `.vv`                                     |
+| C             | `.c`                                            |
+| D             | `.d`                                            |
+| Lua           | `.lua`                                          |
+| Pascal        | `.pas`, `.pp`, `.inc`                           |
+| Swift         | `.swift`                                        |
+| Ruby          | `.rb`                                           |
+| Go            | `.go`                                           |
+| Kotlin        | `.kt`, `.kts`                                   |
+| Scala         | `.scala`                                        |
+| PHP           | `.php`                                          |
+| Zig           | `.zig`                                          |
 
 ## Installation
 
@@ -93,6 +97,18 @@ code-analyzer --input ./src --config ./custom-config.yaml --verbose
 
 # Analyze a specific directory structure
 code-analyzer -i /path/to/source -o /path/to/output.txt -v
+
+# Analyze Kotlin files
+code-analyzer --input ./kotlin-app --output kotlin-analysis.txt
+
+# Analyze Scala project
+code-analyzer --input ./scala-project --verbose
+
+# Analyze PHP application
+code-analyzer --input ./wordpress-plugin --output php-output.txt
+
+# Analyze Zig project
+code-analyzer --input ./zig-program --verbose
 ```
 
 ## Output Format
@@ -122,6 +138,29 @@ src/utils/helper.js
 class StringHelper – Utility class for string operations
 public method capitalize() – Capitalizes first letter
 function formatDate(date) – Formats a date to string
+
+src/app/Calculator.kt
+class Calculator – A simple calculator class
+public method add(a Double, b Double) – Adds two numbers together
+private method logOperation(op String) – Logs operation
+data class Result – Calculation result with timestamp
+
+src/core/Processor.scala
+trait Processor – Interface for data processing
+class TextProcessor – inherited Processor – Text processor
+public method process(input String) – Processes input
+object Factory – Factory for creating instances
+
+src/model/User.php
+class User – User class representing a user
+public method __construct(name, email) – Constructor
+private method validateEmail(email) – Validates email
+interface UserRepository – Interface for user repos
+
+src/utils/math.zig
+pub const struct Point – 2D coordinate point
+pub fn add(a f64, b f64) – Adds two numbers
+fn square(x f64) – Calculates square of number
 ```
 
 ## Documentation Extraction Rules
@@ -203,7 +242,11 @@ code-analyzer/
 │       ├── swift.v        # Swift parser
 │       ├── ruby.v         # Ruby parser
 │       ├── go.v           # Go parser
-│       └── vlang.v        # V (Vlang) parser
+│       ├── vlang.v        # V (Vlang) parser
+│       ├── kotlin.v       # Kotlin parser
+│       ├── scala.v        # Scala parser
+│       ├── php.v          # PHP parser
+│       └── zig.v          # Zig parser
 └── examples/
     ├── config.yaml        # Example configuration
     └── sample_output.txt  # Sample output format
@@ -290,6 +333,13 @@ For issues, questions, or contributions:
 - Review example configurations
 
 ## Changelog
+
+### Version 1.1.0
+- Added support for Kotlin (.kt, .kts)
+- Added support for Scala (.scala)
+- Added support for PHP (.php)
+- Added support for Zig (.zig)
+- Total support for 20 programming languages
 
 ### Version 1.0.0
 - Initial release

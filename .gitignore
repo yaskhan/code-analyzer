@@ -24,7 +24,6 @@ output.txt
 
 # Test output
 test_output/
-test/
 temp/
 
 # Build artifacts

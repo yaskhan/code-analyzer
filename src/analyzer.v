@@ -91,6 +91,26 @@ fn (mut a Analyzer) register_parsers() {
     for ext in vlang_parser.get_extensions() {
         a.parsers_map[ext] = vlang_parser
     }
+
+    kotlin_parser := parsers.KotlinParser{}
+    for ext in kotlin_parser.get_extensions() {
+        a.parsers_map[ext] = kotlin_parser
+    }
+
+    scala_parser := parsers.ScalaParser{}
+    for ext in scala_parser.get_extensions() {
+        a.parsers_map[ext] = scala_parser
+    }
+
+    php_parser := parsers.PhpParser{}
+    for ext in php_parser.get_extensions() {
+        a.parsers_map[ext] = php_parser
+    }
+
+    zig_parser := parsers.ZigParser{}
+    for ext in zig_parser.get_extensions() {
+        a.parsers_map[ext] = zig_parser
+    }
 }
 
 pub fn (mut a Analyzer) analyze_directory(root_path string, mut progress ProgressTracker) []parsers.ParseResult {
