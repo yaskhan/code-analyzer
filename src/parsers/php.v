@@ -48,38 +48,60 @@ fn (p PhpParser) parse_class(lines []string, idx int) CodeElement {
 	mut parent := ''
 	mut element_type := 'class'
 
-	// Extract class/interface/trait name and inheritance/implementation
-	mut re := regex.regex_opt(r'(abstract )?class|interface|trait') or { panic(err) }
-	start, _ := re.match_string(line)
-
-	if start >= 0 {
-		// Determine element type
-		if line.starts_with('interface ') {
-			element_type = 'interface'
-		} else if line.starts_with('trait ') {
-			element_type = 'trait'
-		} else if line.starts_with('abstract class ') {
-			element_type = 'abstract class'
+	// Determine element type and extract class name
+	if line.starts_with('interface ') {
+		element_type = 'interface'
+		// Extract interface name
+		mut re := regex.regex_opt(r'interface\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
 		}
-
+	} else if line.starts_with('trait ') {
+		element_type = 'trait'
+		// Extract trait name
+		mut re := regex.regex_opt(r'trait\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
+	} else if line.starts_with('abstract class ') {
+		element_type = 'abstract class'
+		// Extract abstract class name
+		mut re := regex.regex_opt(r'abstract\s+class\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
+	} else {
+		// Regular class
 		// Extract class name
-		mut class_re := regex.regex_opt(r'(?:class|interface|trait)\s+(\w+)') or { panic(err) }
-		class_start, _ := class_re.match_string(line)
-		if class_start >= 0 {
-			class_groups := class_re.get_group_list()
-			if class_groups.len > 0 && class_groups[0].start >= 0 {
-				class_name = line[class_groups[0].start..class_groups[0].end]
+		mut re := regex.regex_opt(r'class\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
 			}
 		}
+	}
 
-		// Extract parent class from extends
-		mut extends_re := regex.regex_opt(r'extends\s+(\w+)') or { panic(err) }
-		extends_start, _ := extends_re.match_string(line)
-		if extends_start >= 0 {
-			extends_groups := extends_re.get_group_list()
-			if extends_groups.len > 0 && extends_groups[0].start >= 0 {
-				parent = line[extends_groups[0].start..extends_groups[0].end]
-			}
+	// Extract parent class from extends
+	mut extends_re := regex.regex_opt(r'extends\s+(\w+)') or { panic(err) }
+	extends_start, _ := extends_re.match_string(line)
+	if extends_start >= 0 {
+		extends_groups := extends_re.get_group_list()
+		if extends_groups.len > 0 {
+			parent = line[extends_groups[0].start..extends_groups[0].end]
 		}
 	}
 
@@ -126,7 +148,7 @@ fn (p PhpParser) parse_function(lines []string, idx int) CodeElement {
 
 	if start >= 0 {
 		groups := re.get_group_list()
-		if groups.len > 0 && groups[0].start >= 0 {
+		if groups.len > 0 {
 			func_name = line[groups[0].start..groups[0].end]
 		}
 	}

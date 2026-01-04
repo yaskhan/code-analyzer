@@ -48,28 +48,56 @@ fn (p KotlinParser) parse_class(lines []string, idx int) CodeElement {
 	mut parent := ''
 	mut element_type := 'class'
 
-	// Extract class name and inheritance
-	mut re := regex.regex_opt(r'(?:class|data class|interface|object)\s+(\w+)(?:\s*:\s*([\w\s,]+))?') or {
-		panic(err)
-	}
-	start, _ := re.match_string(line)
-
-	if start >= 0 {
-		groups := re.get_group_list()
-		if groups.len > 0 && groups[0].start >= 0 {
-			class_name = line[groups[0].start..groups[0].end]
-
-			// Determine element type
-			if line.starts_with('data class ') {
-				element_type = 'data class'
-			} else if line.starts_with('interface ') {
-				element_type = 'interface'
-			} else if line.starts_with('object ') {
-				element_type = 'object'
+	// Determine element type and extract class name
+	if line.starts_with('data class ') {
+		element_type = 'data class'
+		mut re := regex.regex_opt(r'data\s+class\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
 			}
 		}
-		if groups.len > 1 && groups[1].start >= 0 {
-			parent = line[groups[1].start..groups[1].end].split(',')[0].trim_space()
+	} else if line.starts_with('interface ') {
+		element_type = 'interface'
+		mut re := regex.regex_opt(r'interface\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
+	} else if line.starts_with('object ') {
+		element_type = 'object'
+		mut re := regex.regex_opt(r'object\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
+	} else {
+		// Regular class
+		mut re := regex.regex_opt(r'class\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
+	}
+
+	// Extract parent class from inheritance (after colon)
+	mut extends_re := regex.regex_opt(r':\s*([\w\s,]+)') or { panic(err) }
+	extends_start, _ := extends_re.match_string(line)
+	if extends_start >= 0 {
+		extends_groups := extends_re.get_group_list()
+		if extends_groups.len > 0 {
+			parent = line[extends_groups[0].start..extends_groups[0].end].split(',')[0].trim_space()
 		}
 	}
 
@@ -105,7 +133,7 @@ fn (p KotlinParser) parse_function(lines []string, idx int) CodeElement {
 
 	if start >= 0 {
 		groups := re.get_group_list()
-		if groups.len > 0 && groups[0].start >= 0 {
+		if groups.len > 0 {
 			func_name = line[groups[0].start..groups[0].end]
 		}
 	}

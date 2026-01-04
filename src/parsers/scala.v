@@ -45,22 +45,47 @@ fn (p ScalaParser) parse_class(lines []string, idx int) CodeElement {
 	mut parent := ''
 	mut element_type := 'class'
 
-	// Extract class/object/trait name and inheritance
-	mut re := regex.regex_opt(r'(class|object|trait)\s+(\w+)(?:\s*\(\s*\))?(?:\s+extends\s+(\w+))?') or {
-		panic(err)
+	// Extract class/object/trait name and determine element type
+	if line.starts_with('trait ') {
+		element_type = 'trait'
+		mut re := regex.regex_opt(r'trait\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
+	} else if line.starts_with('object ') {
+		element_type = 'object'
+		mut re := regex.regex_opt(r'object\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
+	} else {
+		// Regular class
+		element_type = 'class'
+		mut re := regex.regex_opt(r'class\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(line)
+		if start >= 0 {
+			groups := re.get_group_list()
+			if groups.len > 0 {
+				class_name = line[groups[0].start..groups[0].end]
+			}
+		}
 	}
-	start, _ := re.match_string(line)
 
-	if start >= 0 {
-		groups := re.get_group_list()
-		if groups.len > 0 && groups[0].start >= 0 {
-			element_type = line[groups[0].start..groups[0].end]
-		}
-		if groups.len > 1 && groups[1].start >= 0 {
-			class_name = line[groups[1].start..groups[1].end]
-		}
-		if groups.len > 2 && groups[2].start >= 0 {
-			parent = line[groups[2].start..groups[2].end]
+	// Check for extends
+	extends_re := regex.regex_opt(r'extends\s+(\w+)') or { panic(err) }
+	extends_start, _ := extends_re.match_string(line)
+	if extends_start >= 0 {
+		extends_groups := extends_re.get_group_list()
+		if extends_groups.len > 0 {
+			parent = line[extends_groups[0].start..extends_groups[0].end]
 		}
 	}
 
@@ -94,7 +119,7 @@ fn (p ScalaParser) parse_function(lines []string, idx int) CodeElement {
 
 	if start >= 0 {
 		groups := re.get_group_list()
-		if groups.len > 0 && groups[0].start >= 0 {
+		if groups.len > 0 {
 			func_name = line[groups[0].start..groups[0].end]
 		}
 	}
