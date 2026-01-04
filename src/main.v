@@ -141,7 +141,11 @@ Supported Languages:
   - Swift (.swift)
   - Ruby (.rb)
   - Go (.go)
-
+  - Kotlin
+  - Scala
+  - PHP
+  - Zig
+  
 Examples:
   # Analyze a Python project
   code-analyzer --input ./my-project --lang python --output results.txt

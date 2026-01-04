@@ -25,8 +25,8 @@ pub fn (p ZigParser) parse(content string, file_path string) ParseResult {
 		}
 		
 		// Parse struct definitions
-		if trimmed.starts_with('const ') && trimmed.contains('= struct') || 
-		   trimmed.starts_with('pub const ') && trimmed.contains('= struct') {
+		if (trimmed.starts_with('const ') && trimmed.contains('= struct')) || 
+		   (trimmed.starts_with('pub const ') && trimmed.contains('= struct')) {
 			result.elements << p.parse_struct(lines, i)
 		}
 		// Parse function definitions
