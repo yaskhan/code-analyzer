@@ -48,12 +48,15 @@ fn format_element(element parsers.CodeElement) string {
 			parts << 'public'
 		}
 		parts << '${element.element_type} ${element.name}'
-	} else if element.element_type == 'struct' {
-		// For structs, add access modifier if present
-		if element.access.len > 0 {
+	} else if element.element_type == 'struct' || element.element_type == 'enum'
+		|| element.element_type == 'constant' || element.element_type == 'match_expression' {
+		// For structs, enums, constants, and match expressions, add access modifier if present
+		if element.access.len > 0 && element.access != 'public' {
 			parts << element.access
+		} else if element.access == 'public' {
+			parts << 'public'
 		}
-		parts << 'struct ${element.name}'
+		parts << '${element.element_type} ${element.name}'
 	} else {
 		// For functions and methods, add access modifier if not empty
 		if element.access.len > 0 && element.access != 'public' {
