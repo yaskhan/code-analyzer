@@ -46,15 +46,14 @@ pub fn extract_doc_lines(lines []string, start_idx int, max_lines int) string {
 
 fn is_comment_line(line string) bool {
 	trimmed := line.trim_space()
-	return trimmed.starts_with('//') || trimmed.starts_with('#') || 
-	       trimmed.starts_with('/*') || trimmed.starts_with('*') ||
-	       trimmed.starts_with('---') || trimmed.starts_with('"""') ||
-	       trimmed.starts_with("'''")
+	return trimmed.starts_with('//') || trimmed.starts_with('#') || trimmed.starts_with('/*')
+		|| trimmed.starts_with('*') || trimmed.starts_with('---') || trimmed.starts_with('"""')
+		|| trimmed.starts_with("'''")
 }
 
 fn clean_comment(line string) string {
 	mut cleaned := line.trim_space()
-	
+
 	// Remove common comment markers
 	if cleaned.starts_with('///') {
 		cleaned = cleaned[3..].trim_space()
@@ -75,7 +74,7 @@ fn clean_comment(line string) string {
 	} else if cleaned.starts_with("'''") {
 		cleaned = cleaned[3..].trim_space()
 	}
-	
+
 	// Remove trailing comment markers
 	if cleaned.ends_with('*/') {
 		cleaned = cleaned[..cleaned.len - 2].trim_space()
@@ -84,6 +83,6 @@ fn clean_comment(line string) string {
 	} else if cleaned.ends_with("'''") {
 		cleaned = cleaned[..cleaned.len - 3].trim_space()
 	}
-	
+
 	return cleaned
 }

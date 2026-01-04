@@ -62,7 +62,7 @@ fn main() {
 	if args.verbose {
 		eprintln('Starting analysis of: ${args.input}')
 		extensions := analyzer.get_supported_extensions()
-		eprintln('Supported extensions: ${extensions.join(", ")}')
+		eprintln('Supported extensions: ${extensions.join(', ')}')
 	}
 
 	// Analyze directory

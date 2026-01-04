@@ -11,20 +11,20 @@ pub fn (p PascalParser) get_extensions() []string {
 pub fn (p PascalParser) parse(content string, file_path string) ParseResult {
 	mut result := ParseResult{
 		file_path: file_path
-		elements: []CodeElement{}
+		elements:  []CodeElement{}
 	}
 
 	lines := content.split_into_lines()
-	
+
 	for i, line in lines {
 		trimmed := line.trim_space()
 		lower := trimmed.to_lower()
-		
+
 		// Skip comments
 		if trimmed.starts_with('//') || trimmed.starts_with('{') || trimmed.starts_with('(*') {
 			continue
 		}
-		
+
 		// Parse class definitions
 		if lower.starts_with('type') {
 			// Look ahead for class definitions
@@ -46,14 +46,14 @@ pub fn (p PascalParser) parse(content string, file_path string) ParseResult {
 
 fn (p PascalParser) parse_class(lines []string, idx int) CodeElement {
 	line := lines[idx].trim_space()
-	
+
 	mut class_name := ''
 	mut parent := ''
-	
+
 	// Extract class name and inheritance
 	mut re := regex.regex_opt(r'(\w+)\s*=\s*class\s*\((\w+)\)?') or { panic(err) }
-	mut start, mut _ := re.match_string(line)
-	
+	mut start, _ := re.match_string(line)
+
 	if start >= 0 {
 		groups := re.get_group_list()
 		if groups.len > 0 {
@@ -73,25 +73,25 @@ fn (p PascalParser) parse_class(lines []string, idx int) CodeElement {
 			}
 		}
 	}
-	
+
 	doc := extract_doc_lines(lines, idx, 5)
-	
+
 	return CodeElement{
 		element_type: 'class'
-		name: class_name
-		parent: parent
-		doc: doc
-		line_number: idx + 1
+		name:         class_name
+		parent:       parent
+		doc:          doc
+		line_number:  idx + 1
 	}
 }
 
 fn (p PascalParser) parse_function(lines []string, idx int) CodeElement {
 	line := lines[idx].trim_space()
 	lower := line.to_lower()
-	
+
 	mut func_name := ''
 	mut access := 'public'
-	
+
 	// Check for private/protected
 	if idx > 0 {
 		for j := idx - 1; j >= 0 && j > idx - 5; j-- {
@@ -107,32 +107,32 @@ fn (p PascalParser) parse_function(lines []string, idx int) CodeElement {
 			}
 		}
 	}
-	
+
 	// Extract function/procedure name
 	mut re := regex.regex_opt(r'(?:function|procedure)\s+(\w+)') or { panic(err) }
 	start, _ := re.match_string(lower)
-	
+
 	if start >= 0 {
 		groups := re.get_group_list()
 		if groups.len > 0 {
 			func_name = lower[groups[0].start..groups[0].end]
 		}
 	}
-	
+
 	doc := extract_doc_lines(lines, idx, 2)
-	
+
 	// Determine if it's a method based on indentation
 	element_type := if lines[idx].starts_with(' ') || lines[idx].starts_with('\t') {
 		'method'
 	} else {
 		'function'
 	}
-	
+
 	return CodeElement{
 		element_type: element_type
-		name: func_name
-		access: access
-		doc: doc
-		line_number: idx + 1
+		name:         func_name
+		access:       access
+		doc:          doc
+		line_number:  idx + 1
 	}
 }
