@@ -7,6 +7,7 @@ A powerful console application written in V (Vlang) that recursively analyzes so
 - **Multi-language Support**: Built-in support for 20 programming languages
 - **Recursive Analysis**: Scans directories and subdirectories automatically
 - **Documentation Extraction**: Captures comments and docstrings before code elements
+- **Line Numbering**: Optionally include source line numbers for each discovered element
 - **Extensible**: Add custom language support via configuration files
 - **Fast Performance**: Efficiently handles projects with thousands of files
 - **Cross-platform**: Works on Windows, Linux, and macOS
@@ -80,6 +81,7 @@ code-analyzer --input ./my-project --output analysis.txt
 -o, --output <file>     Output file path (default: ./output.txt)
 -c, --config <file>     Custom config file path (YAML or JSON)
 -v, --verbose           Show progress and details
+-n, --line              Show line numbers for code elements
 -h, --help              Show help message
 ```
 
@@ -109,6 +111,9 @@ code-analyzer --input ./wordpress-plugin --output php-output.txt
 
 # Analyze Zig project
 code-analyzer --input ./zig-program --verbose
+
+# Analyze with line numbers
+code-analyzer --input ./src --line
 ```
 
 ## Output Format

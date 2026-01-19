@@ -5,12 +5,13 @@ import flag
 
 struct Arguments {
 mut:
-	input   string
-	lang    string
-	output  string
-	config  string
-	verbose bool
-	help    bool
+	input     string
+	lang      string
+	output    string
+	config    string
+	verbose   bool
+	show_line bool
+	help      bool
 }
 
 fn main() {
@@ -69,7 +70,7 @@ fn main() {
 	results := analyzer.analyze_directory(args.input, mut progress)
 
 	// Write output
-	write_output(results, args.output) or {
+	write_output(results, args.output, args.show_line) or {
 		eprintln('Error writing output: ${err}')
 		exit(1)
 	}
@@ -98,6 +99,7 @@ fn parse_arguments() Arguments {
 	args.output = fp.string('output', `o`, './output.txt', 'Output file path')
 	args.config = fp.string('config', `c`, '', 'Custom config file path')
 	args.verbose = fp.bool('verbose', `v`, false, 'Show progress and details')
+	args.show_line = fp.bool('line', `n`, false, 'Show line numbers for code elements')
 	args.help = fp.bool('help', `h`, false, 'Show help message')
 
 	fp.finalize() or {
@@ -122,6 +124,7 @@ Arguments:
   -o, --output <file>     Output file path (default: ./output.txt)
   -c, --config <file>     Custom config file path (YAML or JSON)
   -v, --verbose           Show progress and details
+  -n, --line              Show line numbers for code elements
   -h, --help              Show this help message
 
 Supported Languages:

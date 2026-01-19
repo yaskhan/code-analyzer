@@ -3,7 +3,7 @@ module main
 import os
 import parsers
 
-pub fn write_output(results []parsers.ParseResult, output_path string) ! {
+pub fn write_output(results []parsers.ParseResult, output_path string, show_line bool) ! {
 	mut f := os.create(output_path) or { return error('Failed to create output file: ${err}') }
 	defer {
 		f.close()
@@ -21,7 +21,7 @@ pub fn write_output(results []parsers.ParseResult, output_path string) ! {
 
 		// Write elements
 		for element in result.elements {
-			line := format_element(element)
+			line := format_element(element, show_line)
 			f.write_string('${line}\n') or {
 				return error('Failed to write to output file: ${err}')
 			}
@@ -32,7 +32,7 @@ pub fn write_output(results []parsers.ParseResult, output_path string) ! {
 	}
 }
 
-fn format_element(element parsers.CodeElement) string {
+fn format_element(element parsers.CodeElement, show_line bool) string {
 	mut parts := []string{}
 
 	// Handle different element types
@@ -75,10 +75,18 @@ fn format_element(element parsers.CodeElement) string {
 		parts = [result]
 	}
 
+	formatted := parts.join(' ')
+	
 	// Add documentation if present
-	if element.doc.len > 0 {
-		return parts.join(' ') + ' – ${element.doc}'
+	final_output := if element.doc.len > 0 {
+		'${formatted} – ${element.doc}'
+	} else {
+		formatted
 	}
 
-	return parts.join(' ')
+	if show_line {
+		return '${element.line_number}: ${final_output}'
+	}
+
+	return final_output
 }

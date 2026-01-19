@@ -15,32 +15,45 @@ pub fn (p RustParser) parse(content string, file_path string) ParseResult {
 	}
 
 	lines := content.split_into_lines()
+	mut in_impl_block := false
 
 	for i, line in lines {
 		trimmed := line.trim_space()
 
-		// Skip comments
-		if trimmed.starts_with('//') || trimmed.starts_with('/*') {
+		// Skip comments and empty lines
+		if trimmed.starts_with('//') || trimmed.starts_with('/*') || trimmed == '' {
+			continue
+		}
+
+		// Check for impl block
+		if trimmed.contains('impl ') && trimmed.contains('{') {
+			in_impl_block = true
+			continue
+		}
+		
+		// Very basic end of block detection
+		if trimmed == '}' {
+			in_impl_block = false
 			continue
 		}
 
 		// Parse module definitions
-		if trimmed.starts_with('mod ') {
-			result.elements << p.parse_module(lines, i)
+		if (trimmed.starts_with('mod ') || trimmed.contains(' mod ')) && !trimmed.contains('use ') {
+			element := p.parse_module(lines, i)
+			if element.name != '' {
+				result.elements << element
+			}
 		}
 		// Parse struct/enum definitions
-		else if trimmed.starts_with('struct ') || trimmed.starts_with('enum ') {
-			result.elements << p.parse_struct(lines, i)
+		else if (trimmed.contains('struct ') || trimmed.contains('enum ')) && !trimmed.contains('impl ') {
+			element := p.parse_struct(lines, i)
+			if element.name != '' {
+				result.elements << element
+			}
 		}
-		// Parse impl blocks (for methods)
-		else if trimmed.starts_with('impl ') {
-			// We'll handle methods inside impl blocks
-			continue
-		}
-		// Parse function definitions
-		else if trimmed.starts_with('fn ') || trimmed.starts_with('pub fn ')
-			|| trimmed.starts_with('pub(crate) fn ') {
-			element := p.parse_function(lines, i)
+		// Parse function/method definitions
+		else if trimmed.contains('fn ') {
+			element := p.parse_function(lines, i, in_impl_block)
 			if element.name != '' {
 				result.elements << element
 			}
@@ -52,17 +65,15 @@ pub fn (p RustParser) parse(content string, file_path string) ParseResult {
 
 fn (p RustParser) parse_module(lines []string, idx int) CodeElement {
 	line := lines[idx].trim_space()
-
 	mut mod_name := ''
 
-	// Extract module name
-	mut re := regex.regex_opt(r'mod\s+(\w+)') or { panic(err) }
-	start, _ := re.match_string(line)
-
-	if start >= 0 {
-		groups := re.get_group_list()
-		if groups.len > 0 {
-			mod_name = line[groups[0].start..groups[0].end]
+	// Find the start of the module declaration
+	if pos := line.index('mod ') {
+		content := line[pos..]
+		mut re := regex.regex_opt(r'mod\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(content)
+		if start >= 0 {
+			mod_name = re.get_group_by_id(content, 0)
 		}
 	}
 
@@ -79,55 +90,64 @@ fn (p RustParser) parse_module(lines []string, idx int) CodeElement {
 fn (p RustParser) parse_struct(lines []string, idx int) CodeElement {
 	line := lines[idx].trim_space()
 
-	mut struct_name := ''
+	mut name := ''
+	mut element_type := 'struct'
 
-	// Extract struct/enum name
-	mut re := regex.regex_opt(r'(?:struct|enum)\s+(\w+)') or { panic(err) }
-	start, _ := re.match_string(line)
+	if line.contains('enum ') {
+		element_type = 'enum'
+	}
 
-	if start >= 0 {
-		groups := re.get_group_list()
-		if groups.len > 0 {
-			struct_name = line[groups[0].start..groups[0].end]
+	// Extract name - find keyword first
+	keyword := if element_type == 'enum' { 'enum ' } else { 'struct ' }
+	if pos := line.index(keyword) {
+		content := line[pos..]
+		mut re := if element_type == 'enum' {
+			regex.regex_opt(r'enum\s+(\w+)') or { panic(err) }
+		} else {
+			regex.regex_opt(r'struct\s+(\w+)') or { panic(err) }
+		}
+		
+		start, _ := re.match_string(content)
+		if start >= 0 {
+			name = re.get_group_by_id(content, 0)
 		}
 	}
 
 	doc := extract_doc_lines(lines, idx, 5)
 
 	return CodeElement{
-		element_type: 'class'
-		name:         struct_name
+		element_type: element_type
+		name:         name
 		doc:          doc
 		line_number:  idx + 1
 	}
 }
 
-fn (p RustParser) parse_function(lines []string, idx int) CodeElement {
+fn (p RustParser) parse_function(lines []string, idx int, in_impl bool) CodeElement {
 	line := lines[idx].trim_space()
 
 	mut func_name := ''
 	mut access := 'private'
 
 	// Determine access
-	if line.starts_with('pub ') {
+	if line.contains('pub ') || line.contains('pub(') {
 		access = 'public'
 	}
 
 	// Extract function name
-	mut re := regex.regex_opt(r'fn\s+(\w+)\s*[<(]') or { panic(err) }
-	start, _ := re.match_string(line)
-
-	if start >= 0 {
-		groups := re.get_group_list()
-		if groups.len > 0 {
-			func_name = line[groups[0].start..groups[0].end]
+	if pos := line.index('fn ') {
+		content := line[pos..]
+		mut re := regex.regex_opt(r'fn\s+(\w+)') or { panic(err) }
+		start, _ := re.match_string(content)
+		if start >= 0 {
+			func_name = re.get_group_by_id(content, 0)
 		}
 	}
 
 	doc := extract_doc_lines(lines, idx, 2)
 
-	// Determine if it's a method based on indentation
-	element_type := if lines[idx].starts_with(' ') || lines[idx].starts_with('\t') {
+	// Determine if it's a method
+	element_type := if in_impl {
 		'method'
 	} else {
 		'function'

@@ -31,6 +31,11 @@ pub fn extract_doc_lines(lines []string, start_idx int, max_lines int) string {
 			idx--
 			continue
 		}
+		// Skip attributes (especially for Rust/C#)
+		if line.starts_with('#[') || (line.starts_with('[') && line.ends_with(']')) {
+			idx--
+			continue
+		}
 		if !is_comment_line(line) {
 			break
 		}
