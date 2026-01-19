@@ -4,6 +4,8 @@ code-analyzer
 *.so
 *.dylib
 *.a
+*.lib
+*.obj
 
 # V generated files
 *.c
@@ -11,7 +13,7 @@ code-analyzer
 v.mod.cache
 
 # Output files
-output.txt
+*.txt
 *.log
 
 # IDE/Editor files
@@ -32,3 +34,4 @@ dist/
 
 # OS files
 Thumbs.db
+*.exp
